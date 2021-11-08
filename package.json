@@ -1,0 +1,24 @@
+{
+  "name": "coder-house-store",
+  "version": "1.0.0",
+  "description": "A fake store to learn about backend with JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andresdavidsv/coder-house-store.git"
+  },
+  "keywords": [
+    "backend",
+    "JavaScript",
+    "Node"
+  ],
+  "author": "Andres David Solarte Vidal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andresdavidsv/coder-house-store/issues"
+  },
+  "homepage": "https://github.com/andresdavidsv/coder-house-store#readme"
+}
