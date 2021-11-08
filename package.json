@@ -4,7 +4,10 @@
   "description": "A fake store to learn about backend with JavaScript",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "DEBUG=express:*,app:*  nodemon index",
+    "debug": "DEBUG=express:*,app:* npm run start",
+    "inspect": "DEBUG=express:*,app:* nodemon --inspect index",
+    "start": "node index "
   },
   "repository": {
     "type": "git",
@@ -20,5 +23,17 @@
   "bugs": {
     "url": "https://github.com/andresdavidsv/coder-house-store/issues"
   },
-  "homepage": "https://github.com/andresdavidsv/coder-house-store#readme"
+  "homepage": "https://github.com/andresdavidsv/coder-house-store#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.2.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "nodemon": "^2.0.14",
+    "prettier": "^2.4.1"
+  }
 }
