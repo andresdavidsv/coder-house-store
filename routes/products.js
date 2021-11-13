@@ -3,11 +3,11 @@ const ProductsService = require('../services/products');
 
 function productsApi(app) {
   const router = express.Router();
-  app.use('/api/v1', router);
+  app.use('/api/v1/products', router);
 
   const productsService = new ProductsService();
 
-  router.get('/products', async function (req, res) {
+  router.get('/', async function (req, res) {
 
     let data = await productsService.getProducts();
     if (data.status === 'error') {
@@ -25,10 +25,10 @@ function productsApi(app) {
   });
 
   router.get(
-    '/productRandom',
+    '/:productId',
     async function (req, res) {
-
-      const data = await productsService.getProductId();
+      const { productId } = req.params;
+      const data = await productsService.getProductId(productId);
       if (data.status === 'error') {
         res.status(403).json({
         data: data.product,
@@ -40,6 +40,13 @@ function productsApi(app) {
         message: 'product listed',
       });
     }
+    }
+  );
+
+  router.post(
+    '/',
+    async function (req, res) {
+      const { body: product } = req;
     }
   );
 }
