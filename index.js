@@ -7,9 +7,14 @@ const app = express();
 
 const productsApi = require('./routes/products');
 
-// body parser
-app.use(express.json())
+//Middleware
+const corsHandler = require('./utils/middleware/corsHandler');
 
+// body parser
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(corsHandler());
+app.use('/static', express.static(__dirname + '/public'));
 
 //Routes
 productsApi(app);

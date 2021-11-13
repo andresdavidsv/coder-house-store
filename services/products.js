@@ -15,21 +15,77 @@ class ProductsService {
       return {status:"error",message:"Products not Found"}
     }
   };
-  async getProductId(){
-        try{
-          let products = await fs.promises.readFile(`./files/${this.fileName}`, 'utf-8');
-          products = JSON.parse(products);
-          let index = [];
-          products.forEach(p => index.push(p.id));
-          let id = index[Math.floor(Math.random() * index.length)];
-          let product = products.find(product=>product.id===id);
-          return product ?
-          { status: "success", product } :
-          {status:"error",product:null, message:"Product not Found"}
-        }catch(err){
-            return {status:"error",message:"Product not Found"}
-        }
+  async getProductId({ productId }) {
+    try{
+      let products = await fs.promises.readFile(`./files/${this.fileName}`, 'utf-8');
+      products = JSON.parse(products);
+      let product = products.find(product => product.id == productId);
+      if (typeof product === 'undefined') {
+        throw new Error;
+      }
+      return { status: "success", product, message:"Product Found"}
+    }catch(err){
+        return {status:"error",message:"Product not Found"}
     }
+  }
+  async createProduct(productObj) {
+    try {
+      if (!productObj || !productObj.title || !productObj.price || !productObj.thumbnail) {
+        throw new Error;
+      }
+      let products = await fs.promises.readFile(`./files/${this.fileName}`, 'utf-8');
+      products ? products = JSON.parse(products) : products = [];
+      let lastItem = products[products.length - 1];
+      let product = {
+        ...productObj,
+        id: lastItem ? lastItem.id + 1 : 1,
+      }
+      products.push(product);
+      await fs.promises.writeFile(`./files/${this.fileName}`,JSON.stringify(products,null,2));
+      return { status: "success", product, message:"Product Saved"}
+    }catch(err){
+        return {status:"error",message:"Product not Saved"}
+    }
+  }
+  async updateProduct(productId, productObj) {
+    try{
+      let products = await fs.promises.readFile(`./files/${this.fileName}`, 'utf-8');
+      products = JSON.parse(products);
+      let product = products.find(product => product.id == productId);
+      if (typeof product === 'undefined') {
+        throw new Error;
+      }
+      products.map((p) => {
+        if (p.id == productId) {
+          p.title = productObj.title ? productObj.title : p.title;
+          p.price = productObj.price ? productObj.price : p.price;
+          p.thumbnail = productObj.thumbnail ? productObj.thumbnail : p.thumbnail;
+        }
+        return p;
+      })
+      await fs.promises.writeFile(`./files/${this.fileName}`,JSON.stringify(products,null,2));
+      return { status: "success", products, message:"Product Updated" }
+    }catch(err){
+        return {status:"error",message:"Product not Updated"}
+    }
+  }
+
+  async deleteProductId({ productId }) {
+    try{
+      let products = await fs.promises.readFile(`./files/${this.fileName}`, 'utf-8');
+      products = JSON.parse(products);
+      let product = products.find(product => product.id == productId);
+      if (typeof product === 'undefined') {
+        throw new Error;
+      }
+      const index = products.indexOf(product);
+      products.splice(index, 1);
+      await fs.promises.writeFile(`./files/${this.fileName}`,JSON.stringify(products,null,2));
+      return { status: "success", message: `Product ${product.title} was deleted successfully` }
+    }catch(err){
+        return {status:"error",message:"Product not Found"}
+    }
+  }
 }
 
 module.exports = ProductsService;
