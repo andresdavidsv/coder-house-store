@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  .container
+    h1=title
+    form(action='/products' method='post')
+      .mb-3
+        label.form-label(for='title') Nombre
+        input#title.form-control(type='text' name='title')
+      .mb-3
+        label.form-label(for='price') Precio
+        input#price.form-control(type='text' name='price')
+      .mb-3
+        label.form-label(for='thumbnail') Foto URL
+        input#thumbnail.form-control(type='text' name='thumbnail')
+      button.btn.btn-primary(type='submit') Submit
+  .container
+    .d-grid.gap-2.col-6.mx-auto
+      a.btn.btn-primary.btn-lg(href='/products' tabindex='-1' role='button' aria-disabled='true') Go to Table
