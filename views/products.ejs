@@ -1,6 +1,6 @@
 <div class="container">
-  <h1> {{title}} </h1>
-  {{#if products.products}}
+  <h1> <%= title %> </h1>
+  <% if(products.products){ %>
   <table class="table">
     <thead>
       <tr>
@@ -11,19 +11,19 @@
       </tr>
     </thead>
     <tbody>
-      {{#each products.products}}
+      <% products.products.forEach(function(product) { %>
         <tr>
-          <th scope="row"> {{id}} </th>
-          <td> {{title}} </td>
-          <td> {{price}} </td>
-          <td><img src={{thumbnail}}  alt="" border="3" height="100" width="100" /></td>
+          <th scope="row"> <%= product.id %> </th>
+          <td> <%= product.title %> </td>
+          <td> <%= product.price %> </td>
+          <td><img src=<%= product.thumbnail %>  alt="" border="3" height="100" width="100" /></td>
         </tr>
-      {{/each}}
+      <% }); %>
     </tbody>
   </table>
-  {{else}}
+  <% } else { %>
     <div align="center">NO FOUND PRODUCT</div>
-  {{/if}}
+  <% } %>
 </div>
 <div class="container">
   <div class="d-grid gap-2 col-6 mx-auto"><a class="btn btn-primary btn-lg" href="/" tabindex="-1" role="button"

@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const exphbs = require('express-handlebars');
 
 const { config } = require('./config');
 
@@ -32,13 +31,7 @@ viewsRoute(app);
 productsApi(app);
 
 // The template engine to be used is indicated
-app.engine('.hbs', exphbs.engine({
-  defaultLayout: 'layout',
-  ayoutsDir: path.join(app.get('views'), 'layouts'),
-  partialsDir: path.join(app.get('views'), 'partials'),
-  extname: '.hbs'
-}));
-app.set('view engine', '.hbs');
+app.set('view engine', 'ejs');
 
 // The directory where the templates will be stored is indicated.
 app.set('views', path.join(__dirname, 'views'));
