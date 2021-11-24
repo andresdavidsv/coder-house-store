@@ -5,7 +5,7 @@ const productsService = new ProductsService();
 exports.productHome = async function (req, res) {
   const products = await productsService.getProducts();
   res.render('products', {
-    namePage: 'Products Table',
+    title: 'Products Table',
     products
   })
 }

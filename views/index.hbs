@@ -1,0 +1,16 @@
+<div class="container">
+  <h1>{{title}}</h1>
+  <form action="/products" method="post">
+    <div class="mb-3"><label class="form-label" for="title">Nombre</label><input class="form-control" id="title"
+        type="text" name="title" /></div>
+    <div class="mb-3"><label class="form-label" for="price">Precio</label><input class="form-control" id="price"
+        type="text" name="price" /></div>
+    <div class="mb-3"><label class="form-label" for="thumbnail">Foto URL</label><input class="form-control"
+        id="thumbnail" type="text" name="thumbnail" /></div><button class="btn btn-primary"
+      type="submit">Submit</button>
+  </form>
+</div>
+<div class="container">
+  <div class="d-grid gap-2 col-6 mx-auto"><a class="btn btn-primary btn-lg" href="/products" tabindex="-1" role="button"
+      aria-disabled="true">Go to Table</a></div>
+</div>

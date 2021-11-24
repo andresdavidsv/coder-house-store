@@ -1,0 +1,31 @@
+<div class="container">
+  <h1> {{title}} </h1>
+  {{#if products.products}}
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#ID</th>
+        <th scope="col">Title</th>
+        <th scope="col">Price</th>
+        <th scope="col">Image</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each products.products}}
+        <tr>
+          <th scope="row"> {{id}} </th>
+          <td> {{title}} </td>
+          <td> {{price}} </td>
+          <td><img src={{thumbnail}}  alt="" border="3" height="100" width="100" /></td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+    <div align="center">NO FOUND PRODUCT</div>
+  {{/if}}
+</div>
+<div class="container">
+  <div class="d-grid gap-2 col-6 mx-auto"><a class="btn btn-primary btn-lg" href="/" tabindex="-1" role="button"
+      aria-disabled="true">Go to Form</a></div>
+</div>
