@@ -9,4 +9,5 @@
 - DotEnv => npm i express dotenv
 - Nodemon and Lintr => npm i -D nodemon eslint eslint-config-prettier eslint-plugin-prettier prettier
 - Cors => npm i cors
-- Pug => npm i pug
+- Handlebars => npm i express-handlebars
+- Socket=> npm i socket.io
