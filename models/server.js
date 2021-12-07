@@ -1,0 +1,87 @@
+// Dependences
+const express = require('express');
+const http = require('http');
+const swaggerUI = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
+
+// Configurations
+const { config } = require('../config');
+
+// Sockets
+const socketio = require('socket.io');
+const Sockets = require('./sockets');
+
+//Middleware
+const corsHandler = require('../utils/middleware/corsHandler');
+
+//Helpers
+const helpers = require('../utils/helpers/helpers');
+
+//Servers
+const productsApi = require('../routes/products.routes');
+
+class Server {
+  constructor() {
+    this.app = express();
+    this.port = config.dbPort;
+    // Http Server
+    this.server = http.createServer(this.app);
+    // Config Socket
+    this.io = socketio(this.server, {
+      /* Config */
+    });
+  }
+  configSockets() {
+    new Sockets(this.io);
+  }
+  middleware() {
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(corsHandler());
+    this.app.use('/static', express.static('public'));
+  }
+  utilities() {
+    this.app.use((req, res, next) => {
+      res.locals.vardump = helpers.vardump;
+      next();
+    });
+  }
+  configRoutes() {
+    productsApi(this.app);
+  }
+  configDocumentation() {
+    const options = {
+      definition: {
+        openapi: '3.0.0',
+        info: {
+          title: 'Coder House Store API Documentation',
+          version: '1.0.0',
+          description:
+            'This is a REST API application made with Express. This API is to apply the knowledge acquired during the Backend course at Coder House.',
+        },
+        servers: [
+          {
+            url: `http://localhost:${config.dbPort}/api`,
+            description: 'Development server',
+          },
+        ],
+      },
+      apis: ['./routes/*.routes.js'],
+    };
+    const specs = swaggerJsDoc(options);
+    this.app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs));
+  }
+  execute() {
+    this.middleware();
+    this.utilities();
+    this.configSockets();
+    this.configDocumentation();
+    this.configRoutes();
+    this.server.listen(this.port, function () {
+      const debug = require('debug')('app:server');
+      debug(`Listening http://localhost:${config.dbPort}`);
+    });
+  }
+}
+
+module.exports = Server;

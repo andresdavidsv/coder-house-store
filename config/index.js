@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const config = {
   dev: process.env.NODE_ENV !== 'production',
-  dbPort: process.env.PORT || 3001,
+  dbPort: process.env.PORT || 808,
   cors: process.env.CORS,
   dbUser: process.env.DB_USER,
   dbPassword: process.env.DB_PASSWORD,
