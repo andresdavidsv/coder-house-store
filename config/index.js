@@ -13,6 +13,7 @@ const config = {
   authJwtSecret: process.env.AUTH_JWT_SECRET,
   publicApiKeyToken: process.env.PUBLIC_API_KEY_TOKEN,
   adminApiKeyToken: process.env.ADMIN_API_KEY_TOKEN,
+  scopeRole: process.env.ADMIN,
 };
 
 module.exports = { config };

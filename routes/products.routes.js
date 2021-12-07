@@ -1,6 +1,13 @@
 const express = require('express');
 const ProductsService = require('../services/products');
 
+// Configurations
+const { config } = require('../config');
+
+// Middleware
+const scopesValidationHandler = require('../utils/middleware/scopesValidationHandler');
+const ADMIN = config.scopeRole;
+
 /**
  * @swagger
  * components:
@@ -152,14 +159,18 @@ function productsApi(app) {
    *        description : The Product not was created
    */
 
-  router.post('/', async function (req, res) {
-    const { body: product } = req;
-    const data = await productsService.createProduct(product);
-    res.status(data.status === 'error' ? 403 : 200).json({
-      data: data.product,
-      message: data.message,
-    });
-  });
+  router.post(
+    '/',
+    scopesValidationHandler({ isAdmin: ADMIN }),
+    async function (req, res) {
+      const { body: product } = req;
+      const data = await productsService.createProduct(product);
+      res.status(data.status === 'error' ? 403 : 200).json({
+        data: data.product,
+        message: data.message,
+      });
+    }
+  );
 
   /**
    * @swagger
@@ -191,21 +202,25 @@ function productsApi(app) {
    *        description : The Product not was updated
    */
 
-  router.put('/:productId', async function (req, res) {
-    const { productId } = req.params;
-    const { body: product } = req;
-    const data = await productsService.updateProduct(productId, product);
-    if (data.status === 'error') {
-      res.status(403).json({
-        message: data.message,
-      });
-    } else {
-      res.status(200).json({
-        data: data.products,
-        message: data.message,
-      });
+  router.put(
+    '/:productId',
+    scopesValidationHandler({ isAdmin: ADMIN }),
+    async function (req, res) {
+      const { productId } = req.params;
+      const { body: product } = req;
+      const data = await productsService.updateProduct(productId, product);
+      if (data.status === 'error') {
+        res.status(403).json({
+          message: data.message,
+        });
+      } else {
+        res.status(200).json({
+          data: data.products,
+          message: data.message,
+        });
+      }
     }
-  });
+  );
 
   /**
    * @swagger
@@ -230,13 +245,17 @@ function productsApi(app) {
    *      403:
    *        description : The Product not was removed
    */
-  router.delete('/:productId', async function (req, res) {
-    const { productId } = req.params;
-    const data = await productsService.deleteProductId({ productId });
-    res.status(data.status === 'error' ? 403 : 200).json({
-      message: data.message,
-    });
-  });
+  router.delete(
+    '/:productId',
+    scopesValidationHandler({ isAdmin: ADMIN }),
+    async function (req, res) {
+      const { productId } = req.params;
+      const data = await productsService.deleteProductId({ productId });
+      res.status(data.status === 'error' ? 403 : 200).json({
+        message: data.message,
+      });
+    }
+  );
 }
 
 module.exports = productsApi;

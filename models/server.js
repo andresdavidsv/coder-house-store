@@ -13,12 +13,14 @@ const Sockets = require('./sockets');
 
 //Middleware
 const corsHandler = require('../utils/middleware/corsHandler');
+const notFoundHandler = require('../utils/middleware/notFoundHandler');
 
 //Helpers
 const helpers = require('../utils/helpers/helpers');
 
 //Servers
 const productsApi = require('../routes/products.routes');
+const cartsApi = require('../routes/carts.routes');
 
 class Server {
   constructor() {
@@ -48,6 +50,8 @@ class Server {
   }
   configRoutes() {
     productsApi(this.app);
+    cartsApi(this.app);
+    this.app.use(notFoundHandler);
   }
   configDocumentation() {
     const options = {
@@ -64,6 +68,10 @@ class Server {
             url: `http://localhost:${config.dbPort}/api`,
             description: 'Development server',
           },
+          {
+            url: `https://coder-house-store.vercel.app/api`,
+            description: 'Production server',
+          },
         ],
       },
       apis: ['./routes/*.routes.js'],
@@ -72,10 +80,10 @@ class Server {
     this.app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs));
   }
   execute() {
-    this.middleware();
     this.utilities();
     this.configSockets();
     this.configDocumentation();
+    this.middleware();
     this.configRoutes();
     this.server.listen(this.port, function () {
       const debug = require('debug')('app:server');

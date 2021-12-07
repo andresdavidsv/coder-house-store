@@ -11,3 +11,7 @@
 - Cors => npm i cors
 - Swagger => npm i swagger-jsdoc swagger-ui-express
 - Socket=> npm i socket.io
+- Boom => npm i @hapi/boom
+
+## Documentation
+- URL: /docs/
