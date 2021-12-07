@@ -1,13 +1,15 @@
 const fs = require('fs');
+const path = require('path');
 
 class ProductsService {
   constructor(fileName) {
     this.fileName = fileName || 'products.json';
+    this.route = path.join(__dirname, `../files/${this.fileName}`);
   }
   async getProducts() {
     try {
       let products = await fs.promises.readFile(
-        `./files/${this.fileName}`,
+        `${this.route}`,
         'utf-8'
       );
       products = JSON.parse(products);
@@ -20,10 +22,7 @@ class ProductsService {
   }
   async getProductId({ productId }) {
     try {
-      let products = await fs.promises.readFile(
-        `./files/${this.fileName}`,
-        'utf-8'
-      );
+      let products = await fs.promises.readFile(`${this.route}`, 'utf-8');
       products = JSON.parse(products);
       let product = products.find((product) => product.id == productId);
       if (typeof product === 'undefined') {
@@ -49,10 +48,7 @@ class ProductsService {
       }
       delete productObj.id;
       delete productObj.time_stamp;
-      let products = await fs.promises.readFile(
-        `./files/${this.fileName}`,
-        'utf-8'
-      );
+      let products = await fs.promises.readFile(`${this.route}`, 'utf-8');
       products ? (products = JSON.parse(products)) : (products = []);
       let lastItem = products[products.length - 1];
       let product = {
@@ -62,7 +58,7 @@ class ProductsService {
       };
       products.push(product);
       await fs.promises.writeFile(
-        `./files/${this.fileName}`,
+        `${this.route}`,
         JSON.stringify(products, null, 2)
       );
       return { status: 'success', product, message: 'Product Saved' };
@@ -77,10 +73,7 @@ class ProductsService {
       }
       delete productObj.id;
       delete productObj.time_stamp;
-      let products = await fs.promises.readFile(
-        `./files/${this.fileName}`,
-        'utf-8'
-      );
+      let products = await fs.promises.readFile(`${this.route}`, 'utf-8');
       products = JSON.parse(products);
       let product = products.find((product) => product.id == productId);
       if (typeof product === 'undefined') {
@@ -102,7 +95,7 @@ class ProductsService {
         return p;
       });
       await fs.promises.writeFile(
-        `./files/${this.fileName}`,
+        `${this.route}`,
         JSON.stringify(products, null, 2)
       );
       return { status: 'success', products, message: 'Product Updated' };
@@ -113,10 +106,7 @@ class ProductsService {
 
   async deleteProductId({ productId }) {
     try {
-      let products = await fs.promises.readFile(
-        `./files/${this.fileName}`,
-        'utf-8'
-      );
+      let products = await fs.promises.readFile(`${this.route}`, 'utf-8');
       products = JSON.parse(products);
       let product = products.find((product) => product.id == productId);
       if (typeof product === 'undefined') {
@@ -125,7 +115,7 @@ class ProductsService {
       const index = products.indexOf(product);
       products.splice(index, 1);
       await fs.promises.writeFile(
-        `./files/${this.fileName}`,
+        `${this.route}`,
         JSON.stringify(products, null, 2)
       );
       return {
