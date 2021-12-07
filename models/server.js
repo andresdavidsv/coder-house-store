@@ -69,7 +69,7 @@ class Server {
             description: 'Development server',
           },
           {
-            url: `https://coder-house-store-34cvwti8b-andresdavidsv.vercel.app/api`,
+            url: `https://coder-house-store.vercel.app/api`,
             description: 'Production server',
           },
         ],
