@@ -1,7 +1,8 @@
+// Dependences
 const express = require('express');
 const http = require('http');
-const path = require('path');
-const exphbs = require('express-handlebars');
+const swaggerUI = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
 
 // Configurations
 const { config } = require('../config');
@@ -17,7 +18,6 @@ const corsHandler = require('../utils/middleware/corsHandler');
 const helpers = require('../utils/helpers/helpers');
 
 //Servers
-const viewsRoute = require('../routes/views.routes');
 const productsApi = require('../routes/products.routes');
 
 class Server {
@@ -27,7 +27,9 @@ class Server {
     // Http Server
     this.server = http.createServer(this.app);
     // Config Socket
-    this.io = socketio(this.server, {/* Config */ });
+    this.io = socketio(this.server, {
+      /* Config */
+    });
   }
   configSockets() {
     new Sockets(this.io);
@@ -44,29 +46,37 @@ class Server {
       next();
     });
   }
-  configTemplates() {
-    // The template engine to be used is indicated
-    this.app.engine('.hbs', exphbs.engine({
-      defaultLayout: 'layout',
-      ayoutsDir: path.join(this.app.get('views'), 'layouts'),
-      partialsDir: path.join(this.app.get('views'), 'partials'),
-      extname: '.hbs'
-    }));
-    this.app.set('view engine', '.hbs');
-
-    // The directory where the templates will be stored is indicated.
-    this.app.set('views', path.join(__dirname, '../views'));
-  }
   configRoutes() {
-    viewsRoute(this.app);
     productsApi(this.app);
+  }
+  configDocumentation() {
+    const options = {
+      definition: {
+        openapi: '3.0.0',
+        info: {
+          title: 'Coder House Store API Documentation',
+          version: '1.0.0',
+          description:
+            'This is a REST API application made with Express. This API is to apply the knowledge acquired during the Backend course at Coder House.',
+        },
+        servers: [
+          {
+            url: `http://localhost:${config.dbPort}/api`,
+            description: 'Development server',
+          },
+        ],
+      },
+      apis: ['./routes/*.routes.js'],
+    };
+    const specs = swaggerJsDoc(options);
+    this.app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs));
   }
   execute() {
     this.middleware();
     this.utilities();
     this.configSockets();
+    this.configDocumentation();
     this.configRoutes();
-    this.configTemplates();
     this.server.listen(this.port, function () {
       const debug = require('debug')('app:server');
       debug(`Listening http://localhost:${config.dbPort}`);

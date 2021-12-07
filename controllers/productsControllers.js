@@ -9,14 +9,3 @@ exports.productHome = async function (req, res) {
     products
   })
 }
-exports.productTable = async function (req, res) {
-  const { body: product } = req;
-  const data = await productsService.createProduct(product);
-  if (data.status === 'error') {
-    res.status(403).json({
-    data: data.product,
-    message: data.message,
-    });
-  }
-  res.redirect('/');
-}
