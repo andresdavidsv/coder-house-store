@@ -1,89 +1,59 @@
-const fs = require('fs');
+const MySqlLib = require('../lib/mysql');
 
 class ProductsService {
-  constructor(fileName){
-    this.fileName=fileName || 'products.txt';
+  constructor(fileName) {
+    this.fileName = fileName || 'products.txt';
+    this.MySqlLib = new MySqlLib();
   }
   async getProducts() {
     try {
-      let products = await fs.promises.readFile(`./files/${this.fileName}`, 'utf-8');
-      products = JSON.parse(products);
-      return products ?
-        { status: "success", products } :
-        {status:"error",products:null, message:"Products not Found"}
+      let products = await this.MySqlLib.getAll();
+      return { status: 'success', products };
     } catch (error) {
-      return {status:"error",message:"Products not Found"}
+      return { status: 'error', message: 'Products not Found' };
     }
-  };
+  }
   async getProductId({ productId }) {
-    try{
-      let products = await fs.promises.readFile(`./files/${this.fileName}`, 'utf-8');
-      products = JSON.parse(products);
-      let product = products.find(product => product.id == productId);
-      if (typeof product === 'undefined') {
-        throw new Error;
-      }
-      return { status: "success", product, message:"Product Found"}
-    }catch(err){
-        return {status:"error",message:"Product not Found"}
+    try {
+      let product = await this.MySqlLib.get(productId);
+      product = JSON.parse(JSON.stringify(product));
+      return { status: 'success', product, message: 'Product Found' };
+    } catch (err) {
+      return { status: 'error', message: 'Product not Found' };
     }
   }
   async createProduct(productObj) {
     try {
-      if (!productObj || !productObj.title || !productObj.price || !productObj.thumbnail) {
-        throw new Error;
-      }
-      let products = await fs.promises.readFile(`./files/${this.fileName}`, 'utf-8');
-      products ? products = JSON.parse(products) : products = [];
-      let lastItem = products[products.length - 1];
-      let product = {
-        ...productObj,
-        id: lastItem ? lastItem.id + 1 : 1,
-      }
-      products.push(product);
-      await fs.promises.writeFile(`./files/${this.fileName}`,JSON.stringify(products,null,2));
-      return { status: "success", product, message:"Product Saved"}
-    }catch(err){
-        return {status:"error",message:"Product not Saved"}
+      const productId = await this.MySqlLib.create(productObj);
+      let product = await this.MySqlLib.get(productId[0]);
+      product = JSON.parse(JSON.stringify(product));
+      return {
+        status: 'success',
+        product: product[0],
+        message: 'Product Saved',
+      };
+    } catch (err) {
+      return { status: 'error', message: 'Product not Saved' };
     }
   }
   async updateProduct(productId, productObj) {
-    try{
-      let products = await fs.promises.readFile(`./files/${this.fileName}`, 'utf-8');
-      products = JSON.parse(products);
-      let product = products.find(product => product.id == productId);
-      if (typeof product === 'undefined') {
-        throw new Error;
-      }
-      products.map((p) => {
-        if (p.id == productId) {
-          p.title = productObj.title ? productObj.title : p.title;
-          p.price = productObj.price ? productObj.price : p.price;
-          p.thumbnail = productObj.thumbnail ? productObj.thumbnail : p.thumbnail;
-        }
-        return p;
-      })
-      await fs.promises.writeFile(`./files/${this.fileName}`,JSON.stringify(products,null,2));
-      return { status: "success", products, message:"Product Updated" }
-    }catch(err){
-        return {status:"error",message:"Product not Updated"}
+    try {
+      const products = await this.MySqlLib.update(productId, productObj);
+      return { status: 'success', products, message: 'Product Updated' };
+    } catch (err) {
+      return { status: 'error', message: 'Product not Updated' };
     }
   }
 
   async deleteProductId({ productId }) {
-    try{
-      let products = await fs.promises.readFile(`./files/${this.fileName}`, 'utf-8');
-      products = JSON.parse(products);
-      let product = products.find(product => product.id == productId);
-      if (typeof product === 'undefined') {
-        throw new Error;
-      }
-      const index = products.indexOf(product);
-      products.splice(index, 1);
-      await fs.promises.writeFile(`./files/${this.fileName}`,JSON.stringify(products,null,2));
-      return { status: "success", message: `Product ${product.title} was deleted successfully` }
-    }catch(err){
-        return {status:"error",message:"Product not Found"}
+    try {
+      const product = await this.MySqlLib.delete(productId);
+      return {
+        status: 'success',
+        message: `Product ${product.title} was deleted successfully`,
+      };
+    } catch (err) {
+      return { status: 'error', message: 'Product not Found' };
     }
   }
 }

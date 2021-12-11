@@ -198,3 +198,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 .vercel
+
+#database files
+/mysql_data
