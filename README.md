@@ -11,3 +11,5 @@
 - Cors => npm i cors
 - Handlebars => npm i express-handlebars
 - Socket=> npm i socket.io
+- Knex and MySQL=> npm i knex mysql
+- Knex and sqlite3=> npm i sqlite3

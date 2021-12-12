@@ -1,8 +1,7 @@
 const MySqlLib = require('../lib/mysql');
 
 class ProductsService {
-  constructor(fileName) {
-    this.fileName = fileName || 'products.txt';
+  constructor() {
     this.MySqlLib = new MySqlLib();
   }
   async getProducts() {
@@ -24,6 +23,14 @@ class ProductsService {
   }
   async createProduct(productObj) {
     try {
+      if (
+        !productObj ||
+        !productObj.title ||
+        !productObj.price ||
+        !productObj.thumbnail
+      ) {
+        throw new Error();
+      }
       const productId = await this.MySqlLib.create(productObj);
       let product = await this.MySqlLib.get(productId[0]);
       product = JSON.parse(JSON.stringify(product));
