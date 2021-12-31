@@ -12,6 +12,8 @@
 - Swagger => npm i swagger-jsdoc swagger-ui-express
 - Socket=> npm i socket.io
 - Boom => npm i @hapi/boom
+- MongoDb = > npm i mongodb
+- Helmet => npm i helmet
 
 ## Documentation
 - URL: /docs/

@@ -3,6 +3,7 @@ const express = require('express');
 const http = require('http');
 const swaggerUI = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
+const helmet = require('helmet');
 
 // Configurations
 const { config } = require('../config');
@@ -14,6 +15,11 @@ const Sockets = require('./sockets');
 //Middleware
 const corsHandler = require('../utils/middleware/corsHandler');
 const notFoundHandler = require('../utils/middleware/notFoundHandler');
+const {
+  logErrors,
+  wrapErrors,
+  errorHandler,
+} = require('../utils/middleware/errorHandlers');
 
 //Helpers
 const helpers = require('../utils/helpers/helpers');
@@ -40,7 +46,12 @@ class Server {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(corsHandler());
+    this.app.use(helmet());
     this.app.use('/static', express.static('public'));
+    //Error middleware
+    this.app.use(logErrors);
+    this.app.use(wrapErrors);
+    this.app.use(errorHandler);
   }
   utilities() {
     this.app.use((req, res, next) => {
