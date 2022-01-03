@@ -1,46 +1,26 @@
-const fs = require('fs');
-const path = require('path');
+const MongoLib = require('../lib/mongo');
 
 class CartsService {
-  constructor(fileName) {
-    this.fileName = fileName || 'carts.json';
-    this.route = path.join(__dirname, `../files/${this.fileName}`);
+  constructor() {
+    this.collection = 'carts';
+    this.mongoDB = new MongoLib();
   }
   async getCartId({ cartId }) {
-    try {
-      let carts = await fs.promises.readFile(`${this.route}`, 'utf-8');
-      carts = JSON.parse(carts);
-      let cart = carts.find((cart) => cart.id == cartId);
-      if (typeof cart === 'undefined') {
-        throw new Error();
-      }
-      return { status: 'success', cart, message: 'Cart Found' };
-    } catch (err) {
-      return { status: 'error', message: 'Cart not Found' };
-    }
+    const cart = await this.mongoDB.get(this.collection, cartId);
+    return cart || [];
   }
-  async createCart() {
-    try {
-      let carts = await fs.promises.readFile(`${this.route}`, 'utf-8');
-      carts ? (carts = JSON.parse(carts)) : (carts = []);
-      let lastItem = carts[carts.length - 1];
-      let cart = {
-        id: lastItem ? lastItem.id + 1 : 1,
-        products: [],
-        time_stamp: new Date().toLocaleString('en-US'),
-      };
-      carts.push(cart);
-      await fs.promises.writeFile(
-        `${this.route}`,
-        JSON.stringify(carts, null, 2)
-      );
-      return { status: 'success', cart, message: 'Cart Created' };
-    } catch (err) {
-      return { status: 'error', message: 'Cart not Created' };
-    }
+  async createCart({ cart }) {
+    const createCartId = await this.mongoDB.create(this.collection, cart);
+    return createCartId;
   }
 
-  async createProductAtCart(cartId, productObj) {
+  async createProductAtCart(cartId, product) {
+    const updateCartId = await this.mongoDB.create(
+      this.collection,
+      cartId,
+      product
+    );
+    return updateCartId;
     try {
       let carts = await fs.promises.readFile(`${this.route}`, 'utf-8');
       carts = JSON.parse(carts);
@@ -53,7 +33,11 @@ class CartsService {
         `${this.route}`,
         JSON.stringify(carts, null, 2)
       );
-      return { status: 'success', cart, message: 'Product was successfully added' };
+      return {
+        status: 'success',
+        cart,
+        message: 'Product was successfully added',
+      };
     } catch (err) {
       return { status: 'error', message: 'Product not added' };
     }

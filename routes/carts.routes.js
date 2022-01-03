@@ -63,18 +63,16 @@ function cartsApi(app) {
    *      403:
    *        description : The Cart not Found
    */
-  router.get('/:cartId/products', async function (req, res) {
+  router.get('/:cartId/products', async function (req, res, next) {
     const { cartId } = req.params;
-    const data = await cartsService.getCartId({ cartId });
-    if (data.status === 'error') {
-      res.status(403).json({
-        message: data.message,
-      });
-    } else {
+    try {
+      const cart = await cartsService.getCartId({ cartId });
       res.status(200).json({
-        data: data.cart.products,
-        message: data.message,
+        data: cart,
+        message: 'cart retrieved',
       });
+    } catch (err) {
+      next(err);
     }
   });
 
@@ -101,29 +99,25 @@ function cartsApi(app) {
    *        description : The Product not was added
    */
 
-  router.post('/:cartId/products', async function (req, res) {
+  router.post('/:cartId/products', async function (req, res, next) {
     const { cartId } = req.params;
     const { body: productId } = req;
-    const dataProduct = await productsService.getProductId(productId);
-    if (dataProduct.status === 'error') {
-      res.status(403).json({
-        message: dataProduct.message,
-      });
+    let product;
+    try {
+      product = await productsService.getProductId(productId);
+    } catch (err) {
+      next(err);
     }
-    const data = await cartsService.createProductAtCart(
-      cartId,
-      dataProduct.product
-    );
-    if (data.status === 'error') {
-      res.status(403).json({
-        message: data.message,
-      });
-    } else {
-      res.status(200).json({
-        data: data,
-        message: data.message,
-      });
-    }
+    console.log(product._id.delete())
+    // try {
+    //   const cart = await cartsService.createProductAtCart(cartId, product);
+    //   res.status(200).json({
+    //     data: cart,
+    //     message: 'cart updated',
+    //   });
+    // } catch (err) {
+    //   next(err);
+    // }
   });
   /**
    * @swagger
