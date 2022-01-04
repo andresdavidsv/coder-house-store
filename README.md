@@ -14,6 +14,7 @@
 - Boom => npm i @hapi/boom
 - MongoDb = > npm i mongodb
 - Helmet => npm i helmet
+- Firebase => npm i firebase-admin
 
 ## Documentation
 - URL: /docs/

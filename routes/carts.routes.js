@@ -108,16 +108,15 @@ function cartsApi(app) {
     } catch (err) {
       next(err);
     }
-    console.log(product._id.delete())
-    // try {
-    //   const cart = await cartsService.createProductAtCart(cartId, product);
-    //   res.status(200).json({
-    //     data: cart,
-    //     message: 'cart updated',
-    //   });
-    // } catch (err) {
-    //   next(err);
-    // }
+    try {
+      const cart = await cartsService.createProductAtCart(cartId, product);
+      res.status(200).json({
+        data: cart,
+        message: 'cart updated',
+      });
+    } catch (err) {
+      next(err);
+    }
   });
   /**
    * @swagger
@@ -140,12 +139,16 @@ function cartsApi(app) {
    *        description : The Cart not was created
    */
 
-  router.post('/', async function (req, res) {
-    const data = await cartsService.createCart();
-    res.status(data.status === 'error' ? 403 : 200).json({
-      data: data.cart,
-      message: data.message,
-    });
+  router.post('/', async function (req, res, next) {
+    try {
+      const createdCartId = await cartsService.createCart();
+      res.status(201).json({
+        data: createdCartId,
+        message: 'cart created',
+      });
+    } catch (err) {
+      next(err);
+    }
   });
 
   /**
@@ -171,12 +174,17 @@ function cartsApi(app) {
    *      403:
    *        description : The Cart not was removed
    */
-  router.delete('/:cartId', async function (req, res) {
+  router.delete('/:cartId', async function (req, res, next) {
     const { cartId } = req.params;
-    const data = await cartsService.deleteCartId({ cartId });
-    res.status(data.status === 'error' ? 403 : 200).json({
-      message: data.message,
-    });
+    try {
+      const deleteCartId = await cartsService.deleteCartId({ cartId });
+      res.status(200).json({
+        data: deleteCartId,
+        message: 'cart deleted',
+      });
+    } catch (err) {
+      next(err);
+    }
   });
 
   /**
@@ -211,27 +219,26 @@ function cartsApi(app) {
   router.delete(
     '/:cartId/products/:productId',
     scopesValidationHandler({ isAdmin: ADMIN }),
-    async function (req, res) {
+    async function (req, res, next) {
       const { cartId, productId } = req.params;
-      const dataProduct = await productsService.deleteProductId({ productId });
-      if (dataProduct.status === 'error') {
-        res.status(403).json({
-          message: dataProduct.message,
+      try {
+        await productsService.deleteProductId({
+          productId,
         });
+      } catch (err) {
+        next(err);
       }
-      const data = await cartsService.deleteProductIdAtCartId({
-        cartId,
-        productId,
-      });
-      if (data.status === 'error') {
-        res.status(403).json({
-          message: data.message,
-        });
-      } else {
+      try {
+        const deleteElementCartId = await cartsService.deleteProductIdAtCartId(
+          cartId,
+          productId
+        );
         res.status(200).json({
-          data: data,
-          message: data.message,
+          data: deleteElementCartId,
+          message: 'Element deleted',
         });
+      } catch (err) {
+        next(err);
       }
     }
   );
