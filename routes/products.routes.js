@@ -12,13 +12,13 @@ function productsApi(app) {
 
   router.get('/', productsController.productHome);
 
-  router.get(
-    '/:productId',
-    async function (req, res) {
-      const { productId } = req.params;
-      const data = await productsService.getProductId({productId});
-      if (data.status === 'error') {
-        res.status(403).json({
+  router.get('/products-test', productsController.productsRandom);
+
+  router.get('/:productId', async function (req, res) {
+    const { productId } = req.params;
+    const data = await productsService.getProductId({ productId });
+    if (data.status === 'error') {
+      res.status(403).json({
         message: data.message,
       });
     } else {
@@ -27,19 +27,16 @@ function productsApi(app) {
         message: data.message,
       });
     }
-    }
-  );
+  });
 
   router.post('/', productsController.productTable);
 
-  router.put(
-    '/:productId',
-    async function (req, res) {
-      const { productId } = req.params;
-      const { body: product } = req;
-      const data = await productsService.updateProduct(productId, product);
-      if (data.status === 'error') {
-        res.status(403).json({
+  router.put('/:productId', async function (req, res) {
+    const { productId } = req.params;
+    const { body: product } = req;
+    const data = await productsService.updateProduct(productId, product);
+    if (data.status === 'error') {
+      res.status(403).json({
         message: data.message,
       });
     } else {
@@ -48,19 +45,15 @@ function productsApi(app) {
         message: data.message,
       });
     }
-    }
-  );
+  });
 
-  router.delete(
-    '/:productId',
-    async function (req, res) {
-      const { productId } = req.params;
-      const data = await productsService.deleteProductId({productId});
-      res.status(data.status === 'error' ? 403 : 200).json({
+  router.delete('/:productId', async function (req, res) {
+    const { productId } = req.params;
+    const data = await productsService.deleteProductId({ productId });
+    res.status(data.status === 'error' ? 403 : 200).json({
       message: data.message,
-      });
-    }
-  );
+    });
+  });
 }
 
 module.exports = productsApi;

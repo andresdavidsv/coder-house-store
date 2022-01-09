@@ -13,6 +13,9 @@
 - Socket=> npm i socket.io
 - Knex and MySQL=> npm i knex mysql
 - Knex and sqlite3=> npm i sqlite3
+- Faker.js => npm i faker
+- MongoDb = > npm i mongodb
+- Normalizr = > npm i normalizr
 
 ## Docker Config
 - docker compose up -d coderHouseMySQL

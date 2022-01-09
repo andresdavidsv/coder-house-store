@@ -21,14 +21,11 @@ class Sockets {
         this.io.emit('products-from-server', productsData);
       });
       //Listen Events from Chat
-      let chatMessagesData = await chatMessagesService.getChatMessages();
+      let chatMessagesData = await chatMessagesService.getChatMessages('');
       this.io.emit('msg-from-server', chatMessagesData);
       socket.on('msg-to-server', async (data) => {
-        const { chatMessage } = await chatMessagesService.createChatMessages(
-          data
-        );
-        chatMessagesData.chatMessages.push(chatMessage);
-        this.io.emit('msg-from-server', chatMessagesData);
+        const messages = await chatMessagesService.createChatMessages(data);
+        this.io.emit('msg-from-server', messages);
       });
     });
   }

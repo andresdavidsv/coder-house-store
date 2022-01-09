@@ -1,38 +1,76 @@
-const Sqlite3Lib = require('../lib/sqilte3');
+const MongoLib = require('../lib/mongo');
+const { normalize, schema } = require('normalizr');
+
+const schemaAutor = new schema.Entity('author', {}, { idAttribute: 'email' });
+
+const schemaMessage = new schema.Entity(
+  'post',
+  { author: schemaAutor },
+  { idAttribute: '_id' }
+);
+
+const schemaMessages = new schema.Entity(
+  'posts',
+  { messages: [schemaMessage] },
+  { idAttribute: 'id' }
+);
 
 class ChatMessagesService {
   constructor() {
-    this.Sqlite3Lib = new Sqlite3Lib();
+    this.collection = 'chatMessages';
+    this.mongoDB = new MongoLib();
   }
-  async getChatMessages() {
-    try {
-      let chatMessages = await this.Sqlite3Lib.getAll();
-      return { status: 'success', chatMessages }
+  async getChatMessages({ name }) {
+    const query = name && { name: { $in: name } };
+    let chatMessages = await this.mongoDB.getAll(this.collection, query);
 
-    } catch (error) {
-      return { status: 'error', message: 'Chat Messages not Found' };
-    }
+    chatMessages = {
+      id: 'mensaje',
+      messages: chatMessages.map((messages) => ({ ...messages })),
+    };
+
+    const normalizedData = normalize(chatMessages, schemaMessages);
+
+    const value = JSON.stringify(chatMessages).length;
+
+    const data = {
+      status: 'success',
+      normalizedData: normalizedData,
+      porcentage: (
+        (value / JSON.stringify(normalizedData).length) *
+        100
+      ).toFixed(2),
+    };
+    return data || [];
   }
-  async createChatMessages(chatMessagesObj) {
-    try {
-      if (
-        !chatMessagesObj ||
-        !chatMessagesObj.user ||
-        !chatMessagesObj.messsage
-      ) {
-        throw new Error();
-      }
-      const chatMessageId = await this.Sqlite3Lib.create(chatMessagesObj);
-      let chatMessage = await this.Sqlite3Lib.get(chatMessageId[0]);
-      chatMessage = JSON.parse(JSON.stringify(chatMessage));
-      return {
-        status: 'success',
-        chatMessage: chatMessage[0],
-        message: 'Chat Message Saved',
-      };
-    } catch (err) {
-      return { status: 'error', message: 'Chat Message not Saved' };
-    }
+
+  async getChatMessagesNormal({ name }) {
+    const query = name && { name: { $in: name } };
+    const chatMessages = await this.mongoDB.getAll(this.collection, query);
+    return chatMessages || [];
+  }
+
+  async createChatMessages(chatMessage) {
+    await this.mongoDB.create(this.collection, chatMessage);
+    let messages = await this.getChatMessagesNormal('');
+    messages = {
+      id: 'message',
+      messages: messages.map((messages) => ({ ...messages })),
+    };
+
+    const normalizedData = normalize(messages, schemaMessages);
+
+    const value = JSON.stringify(messages).length;
+
+    const data = {
+      status: 'success',
+      normalizedData: normalizedData,
+      porcentage: (
+        (value / JSON.stringify(normalizedData).length) *
+        100
+      ).toFixed(2),
+    };
+    return data;
   }
 }
 
