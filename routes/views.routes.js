@@ -9,6 +9,10 @@ function viewsRoute(app) {
 
   router.get('/', viewsController.viewHome);
 
+  router.get('/login', viewsController.viewLogin);
+
+  router.get('/logout', viewsController.viewLogout);
+
 }
 
 module.exports = viewsRoute;

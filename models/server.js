@@ -12,6 +12,7 @@ const Sockets = require('./sockets');
 
 //Middleware
 const corsHandler = require('../utils/middleware/corsHandler');
+const sessionHandler = require('../utils/middleware/sessionHandler');
 
 //Helpers
 const helpers = require('../utils/helpers/helpers');
@@ -36,6 +37,7 @@ class Server {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(corsHandler());
+    this.app.use(sessionHandler);
     this.app.use('/static', express.static('public'));
   }
   utilities() {

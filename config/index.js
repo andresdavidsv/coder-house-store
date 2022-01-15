@@ -18,6 +18,7 @@ const config = {
   publicApiKeyToken: process.env.PUBLIC_API_KEY_TOKEN,
   adminApiKeyToken: process.env.ADMIN_API_KEY_TOKEN,
   scopeRole: process.env.ADMIN,
+  sessionKey: process.env.SESSIONKEY,
 };
 
 module.exports = { config };

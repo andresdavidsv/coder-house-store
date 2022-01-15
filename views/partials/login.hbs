@@ -1,0 +1,27 @@
+<div class='container'>
+  <h1 class='mt-5'>{{titleLogin}}</h1>
+  <hr />
+  <div class='mt-5 row justify-content-center'>
+    {{#if user}}
+      <h1 class='alert alert-success' role='alert'>{{messageLogin}}
+        {{user}}</h1>
+      {{#if isLogin}}
+        <form method='get' action='/logout'>
+          <button
+            class='btn btn-info'
+            name='user'
+            value={{user}}
+          >{{buttonLogout}}</button>
+        </form>
+      {{/if}}
+    {{else}}
+      <form class='col-12' method='get' action='/login' id='login'>
+        <div class='mb-3 col-12'>
+          <label for='user' class='form-label'>Input User Name</label>
+          <input type='text' class='form-control' id='userInput' name='user' />
+        </div>
+        <button type='submit' class='btn btn-primary'>Submit</button>
+      </form>
+    {{/if}}
+  </div>
+</div>
