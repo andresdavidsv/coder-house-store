@@ -18,6 +18,7 @@ formProduct.addEventListener('submit', (e) => {
       price: price,
       thumbnail: thumbnail
     })
+    formProduct.reset();
   }
 })
 

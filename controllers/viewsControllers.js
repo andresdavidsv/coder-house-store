@@ -1,16 +1,12 @@
-
-const titles =
-  {
-    titleForm: 'Input Product',
-    titleTable: 'Products',
-    titleChat: 'Mini Chat',
-    titleLogin: 'Login',
-  }
-;
-
+const titles = {
+  titleForm: 'Input Product',
+  titleTable: 'Products',
+  titleChat: 'Mini Chat',
+  titleLogin: 'Login',
+};
 exports.viewHome = async function (req, res) {
-  res.render('index', { ...titles});
-}
+  res.render('index', { ...titles });
+};
 
 exports.viewLogin = async function (req, res) {
   const { user } = req.query;
@@ -27,7 +23,7 @@ exports.viewLogin = async function (req, res) {
       user,
     });
   }
-}
+};
 
 exports.viewLogout = async function (req, res) {
   const { user } = req.query;
@@ -39,11 +35,11 @@ exports.viewLogout = async function (req, res) {
       });
     }
 
-    return res.render('index', {
+    res.render('index', {
       ...titles,
       messageLogin: 'Good Bye',
       isLogin: false,
       user,
     });
   });
-}
+};

@@ -1,5 +1,6 @@
 const ProductsService = require('../services/products');
 const ChatMessagesService = require('../services/chatMessages');
+const sessionHandler = require('../utils/middleware/sessionHandler');
 
 const productsService = new ProductsService();
 const chatMessagesService = new ChatMessagesService();
@@ -10,6 +11,9 @@ class Sockets {
     this.socketEvents();
   }
   socketEvents() {
+    this.io.use(function (socket, next) {
+      sessionHandler(socket.request, socket.request.res, next);
+    });
     // On Conecction
     this.io.on('connection', async (socket) => {
       //Listen Events from Products
