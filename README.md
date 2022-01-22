@@ -16,6 +16,10 @@
 - Faker.js => npm i faker
 - MongoDb = > npm i mongodb
 - Normalizr = > npm i normalizr
+- Passport Js => npm i passport jsonwebtoken passport-http passport-jwt
+- Bcrypt => npm i bcrypt
+- Boom => npm i @hapi/boom
+- Joi => npm i @hapi/joi
 
 ## Docker Config
 - docker compose up -d coderHouseMySQL

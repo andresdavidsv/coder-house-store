@@ -18,6 +18,7 @@ const sessionHandler = require('../utils/middleware/sessionHandler');
 const helpers = require('../utils/helpers/helpers');
 
 //Servers
+const authApi = require('../routes/auth.routes');
 const viewsRoute = require('../routes/views.routes');
 const productsApi = require('../routes/products.routes');
 
@@ -60,6 +61,7 @@ class Server {
     this.app.set('views', path.join(__dirname, '../views'));
   }
   configRoutes() {
+    authApi(this.app);
     viewsRoute(this.app);
     productsApi(this.app);
   }

@@ -12,10 +12,13 @@ const sessionHandler = session({
     mongoUrl: `mongodb+srv://${USER}:${PASSWORD}@${DB_HOST}/${DB_NAME}?retryWrites=true&w=majority`,
   }),
   secret: config.sessionKey,
-  resave: false,
+  rolling: true,
+  resave: true,
   saveUninitialized: false,
   cookie: {
     maxAge: 10 * 60 * 1000,
+    httpOnly: false,
+    secure: false,
   },
 });
 

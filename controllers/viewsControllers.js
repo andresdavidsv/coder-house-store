@@ -43,3 +43,25 @@ exports.viewLogout = async function (req, res) {
     });
   });
 };
+
+exports.viewRegister = async function (req, res) {
+  res.render('register', {
+    title: 'Register',
+  });
+};
+
+exports.viewFailRegister = async function (req, res) {
+  res.render('failsignup');
+};
+
+exports.viewLoginUser = async function (req, res) {
+  const { user } = req.query;
+  res.render('login', {
+    title: 'Login',
+    user
+  });
+};
+
+exports.viewFailLogin = async function (req, res) {
+  res.render('faillogin');
+};

@@ -9,9 +9,17 @@ function viewsRoute(app) {
 
   router.get('/', viewsController.viewHome);
 
-  router.get('/login', viewsController.viewLogin);
+  router.get('/logged', viewsController.viewLogin);
 
   router.get('/logout', viewsController.viewLogout);
+
+  router.get('/register', viewsController.viewRegister);
+
+  router.get('/failregister', viewsController.viewFailRegister);
+
+  router.get('/login', viewsController.viewLoginUser);
+
+  router.get('/faillogin', viewsController.viewFailLogin);
 
 }
 

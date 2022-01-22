@@ -1,0 +1,26 @@
+<div class='container'>
+  <h1 class='mt-5'>{{title}}</h1>
+  <hr />
+  <div class='mt-5 row justify-content-center'>
+    <form id="registerForm">
+      <div class='mb-3 col-12'>
+        <label for='user' class='form-label'>Input User Name</label>
+        <input type='text' class='form-control' id='userName' name='user' />
+      </div>
+      <div class='mb-3 col-12'>
+        <label for='user' class='form-label'>Input User Email</label>
+        <input type='text' class='form-control' id='userEmail' name='user' />
+      </div>
+      <div class='mb-3 col-12'>
+        <label for='user' class='form-label'>Input User Password</label>
+        <input type='text' class='form-control' id='userPassword' name='user' />
+      </div>
+      <button type='submit' class='btn btn-primary'>Register</button>
+    </form>
+    <hr class='mt-2'/>
+    <button
+      class='btn btn-primary'
+      onclick="location.href='/login'"
+    >Go to Login</button>
+  </div>
+</div>
