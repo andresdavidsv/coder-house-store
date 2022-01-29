@@ -21,6 +21,9 @@ function viewsRoute(app) {
 
   router.get('/faillogin', viewsController.viewFailLogin);
 
+  router.get('/info', viewsController.viewInfo);
+
+  router.get('/api/randoms', viewsController.viewNumberRandom);
 }
 
 module.exports = viewsRoute;

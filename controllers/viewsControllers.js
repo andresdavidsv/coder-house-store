@@ -1,3 +1,5 @@
+const { fork } = require('child_process');
+
 const titles = {
   titleForm: 'Input Product',
   titleTable: 'Products',
@@ -58,10 +60,30 @@ exports.viewLoginUser = async function (req, res) {
   const { user } = req.query;
   res.render('login', {
     title: 'Login',
-    user
+    user,
   });
 };
 
 exports.viewFailLogin = async function (req, res) {
   res.render('faillogin');
+};
+
+exports.viewInfo = async function (req, res) {
+  res.json({
+    argEntrada: process.argv,
+    os: process.platform,
+    nodeVs: process.version,
+    memoryUsage: process.memoryUsage(),
+    excPath: process.execPath,
+    processID: process.pid,
+    folder: process.cwd(),
+  });
+};
+
+exports.viewNumberRandom = async function (req, res) {
+  const randomNumber = fork('./child.js');
+  randomNumber.send(req.query);
+  randomNumber.on('message', (numerosRandom) => {
+    res.end(`Numeros random ${JSON.stringify(numerosRandom)}`);
+  });
 };

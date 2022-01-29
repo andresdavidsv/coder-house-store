@@ -1,8 +1,10 @@
 require('dotenv').config();
 
+const argv = require('minimist')(process.argv.slice(2));
+
 const config = {
   dev: process.env.NODE_ENV !== 'production',
-  dbPort: process.env.PORT || 808,
+  dbPort: argv.p || 8080,
   cors: process.env.CORS,
   dbUser: process.env.DB_USER,
   dbUserMongo: process.env.DB_USER_MONGO,
