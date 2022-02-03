@@ -10,3 +10,9 @@ services:
       - '3308:3306'
     volumes:
       - ./mysql_data:/var/lib/mysql
+  nginx:
+    restart: always
+    build:
+        context: ./nginx
+    ports:
+        - "80:80"
