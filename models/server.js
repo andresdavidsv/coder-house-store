@@ -1,7 +1,10 @@
+// Dependencies
 const express = require('express');
 const http = require('http');
 const path = require('path');
 const exphbs = require('express-handlebars');
+const cluster = require('cluster');
+const numCPUs = require('os').cpus().length;
 
 // Configurations
 const { config } = require('../config');
@@ -16,6 +19,7 @@ const sessionHandler = require('../utils/middleware/sessionHandler');
 
 //Helpers
 const helpers = require('../utils/helpers/helpers');
+const debug = require('debug')('app:server');
 
 //Servers
 const authApi = require('../routes/auth.routes');
@@ -29,7 +33,9 @@ class Server {
     // Http Server
     this.server = http.createServer(this.app);
     // Config Socket
-    this.io = socketio(this.server, {/* Config */ });
+    this.io = socketio(this.server, {
+      /* Config */
+    });
   }
   configSockets() {
     new Sockets(this.io);
@@ -49,12 +55,15 @@ class Server {
   }
   configTemplates() {
     // The template engine to be used is indicated
-    this.app.engine('.hbs', exphbs.engine({
-      defaultLayout: 'layout',
-      ayoutsDir: path.join(this.app.get('views'), 'layouts'),
-      partialsDir: path.join(this.app.get('views'), 'partials'),
-      extname: '.hbs'
-    }));
+    this.app.engine(
+      '.hbs',
+      exphbs.engine({
+        defaultLayout: 'layout',
+        ayoutsDir: path.join(this.app.get('views'), 'layouts'),
+        partialsDir: path.join(this.app.get('views'), 'partials'),
+        extname: '.hbs',
+      })
+    );
     this.app.set('view engine', '.hbs');
 
     // The directory where the templates will be stored is indicated.
@@ -66,15 +75,32 @@ class Server {
     productsApi(this.app);
   }
   execute() {
-    this.middleware();
-    this.utilities();
-    this.configSockets();
-    this.configRoutes();
-    this.configTemplates();
-    this.server.listen(this.port, function () {
-      const debug = require('debug')('app:server');
-      debug(`Listening http://localhost:${config.dbPort}`);
-    });
+    if (config.modeCluster && cluster.isMaster) {
+
+      debug(`Master ${process.pid} is running`);
+
+      for (let i = 0; i < numCPUs; i++) {
+        cluster.fork();
+      }
+
+      // eslint-disable-next-line no-unused-vars
+      cluster.on('exit', (worker, code, signal) => {
+        debug(`Worker ${worker.process.pid} died`);
+      });
+    } else {
+      this.middleware();
+      this.utilities();
+      this.configSockets();
+      this.configRoutes();
+      this.configTemplates();
+      this.server.listen(this.port, function () {
+        debug(`Listening http://localhost:${config.dbPort}`);
+      });
+      process.on('exit', (code) => {
+        debug(code);
+      });
+      debug(`Worker ${process.pid} started`);
+    }
   }
 }
 

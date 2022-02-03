@@ -21,6 +21,7 @@ const config = {
   adminApiKeyToken: process.env.ADMIN_API_KEY_TOKEN,
   scopeRole: process.env.ADMIN,
   sessionKey: process.env.SESSIONKEY,
+  modeCluster: argv.c === 'CLUSTER',
 };
 
 module.exports = { config };
