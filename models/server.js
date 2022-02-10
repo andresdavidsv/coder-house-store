@@ -5,6 +5,8 @@ const path = require('path');
 const exphbs = require('express-handlebars');
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
+const compression = require('compression');
+const log4js = require('log4js');
 
 // Configurations
 const { config } = require('../config');
@@ -26,6 +28,22 @@ const authApi = require('../routes/auth.routes');
 const viewsRoute = require('../routes/views.routes');
 const productsApi = require('../routes/products.routes');
 
+log4js.configure({
+  appenders: {
+      miLoggerConsole: {type: "console"},
+      miLoggerFileWarning: {type: 'file', filename: 'warn.log'},
+      miLoggerFileError: {type: 'file', filename: 'error.log'}
+  },
+  categories: {
+      default: {appenders: ["miLoggerConsole"], level:"trace"},
+      info: {appenders: ["miLoggerConsole"], level: "info"},
+      warn: {appenders:["miLoggerFileWarning"], level: "warn"},
+      error: {appenders: ["miLoggerFileError"], level: "error"}
+  }
+});
+
+const loggerInfo = log4js.getLogger('info');
+
 class Server {
   constructor() {
     this.app = express();
@@ -45,6 +63,7 @@ class Server {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(corsHandler());
     this.app.use(sessionHandler);
+    this.app.use(compression());
     this.app.use('/static', express.static('public'));
   }
   utilities() {
@@ -78,6 +97,7 @@ class Server {
     if (config.modeCluster && cluster.isMaster) {
 
       debug(`Master ${process.pid} is running`);
+      loggerInfo.info(`Master ${process.pid} is running`);
 
       for (let i = 0; i < numCPUs; i++) {
         cluster.fork();
@@ -86,6 +106,7 @@ class Server {
       // eslint-disable-next-line no-unused-vars
       cluster.on('exit', (worker, code, signal) => {
         debug(`Worker ${worker.process.pid} died`);
+        loggerInfo.info(`Worker ${worker.process.pid} died`);
       });
     } else {
       this.middleware();
@@ -95,11 +116,14 @@ class Server {
       this.configTemplates();
       this.server.listen(this.port, function () {
         debug(`Listening http://localhost:${config.dbPort}`);
+        loggerInfo.info(`Listening http://localhost:${config.dbPort}`);
       });
       process.on('exit', (code) => {
         debug(code);
+        loggerInfo.info(code);
       });
       debug(`Worker ${process.pid} started`);
+      loggerInfo.info(`Worker ${process.pid} started`);
     }
   }
 }

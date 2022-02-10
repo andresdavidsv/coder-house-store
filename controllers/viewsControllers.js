@@ -1,4 +1,5 @@
 const { fork } = require('child_process');
+const numCPUs = require('os').cpus().length;
 
 const titles = {
   titleForm: 'Input Product',
@@ -73,10 +74,11 @@ exports.viewInfo = async function (req, res) {
     argEntrada: process.argv,
     os: process.platform,
     nodeVs: process.version,
-    memoryUsage: process.memoryUsage(),
+    memoryUsage: JSON.stringify(process.memoryUsage()),
     excPath: process.execPath,
     processID: process.pid,
     folder: process.cwd(),
+    numCPUs,
   });
 };
 

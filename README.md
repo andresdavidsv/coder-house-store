@@ -20,6 +20,11 @@
 - Bcrypt => npm i bcrypt
 - Boom => npm i @hapi/boom
 - Joi => npm i @hapi/joi
+- Compression => npm i compression
+- log4js => npm i log4js
+- autocannon => npm i autocannon
+- 0x => npm i -g 0x
+- Artillery => npm install -g artillery
 
 ## Docker Config
 - docker compose up -d coderHouseMySQL

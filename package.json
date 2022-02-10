@@ -7,7 +7,8 @@
     "dev": "DEBUG=express:*,app:*  nodemon index",
     "debug": "DEBUG=express:*,app:* npm run start",
     "inspect": "DEBUG=express:*,app:* nodemon --inspect index",
-    "start": "node index "
+    "start": "0x index ",
+    "test": "node benchmark.js"
   },
   "repository": {
     "type": "git",
@@ -28,7 +29,9 @@
   "dependencies": {
     "@hapi/boom": "^9.1.4",
     "@hapi/joi": "^17.1.1",
+    "autocannon": "^7.6.0",
     "bcrypt": "^5.0.1",
+    "compression": "^1.7.4",
     "connect-mongo": "^4.6.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
@@ -37,6 +40,7 @@
     "express-session": "^1.17.2",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.95.14",
+    "log4js": "^6.4.1",
     "minimist": "^1.2.5",
     "mongodb": "^4.3.0",
     "mysql": "^2.18.1",
