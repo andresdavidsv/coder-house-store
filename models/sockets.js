@@ -20,8 +20,8 @@ class Sockets {
       let productsData = await productsService.getProducts();
       this.io.emit('products-from-server', productsData);
       socket.on('products-to-server', async (data) => {
-        const { product } = await productsService.createProduct(data);
-        productsData.products.push(product);
+        const product = await productsService.createProduct(data);
+        productsData.push(product);
         this.io.emit('products-from-server', productsData);
       });
       //Listen Events from Chat
