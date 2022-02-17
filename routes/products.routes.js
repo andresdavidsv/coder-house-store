@@ -1,9 +1,8 @@
 const express = require('express');
-const path = require('path');
 const ProductsService = require('../services/products');
 
 //controller
-const productsController = require(path.join(__dirname,'../controllers/productsControllers'));
+const productsController = require('../controllers/productsControllers');
 
 function productsApi(app) {
   const router = express.Router();

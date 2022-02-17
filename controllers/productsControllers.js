@@ -1,6 +1,5 @@
 const faker = require('faker');
-const path = require('path');
-const ProductsService = require(path.join(__dirname,'../services/products'));
+const ProductsService = require('../services/products');
 
 const productsService = new ProductsService();
 
