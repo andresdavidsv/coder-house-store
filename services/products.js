@@ -1,55 +1,38 @@
-const MySqlLib = require('../lib/mysql');
+const MongoLib = require('../lib/mongo');
 
 class ProductsService {
   constructor() {
-    this.MySqlLib = new MySqlLib();
+    this.collection = 'products';
+    this.mongoDB = new MongoLib();
   }
   async getProducts() {
-    try {
-      let products = await this.MySqlLib.getAll();
-      return { status: 'success', products };
-    } catch (error) {
-      return { status: 'error', message: 'Products not Found' };
-    }
+    const query = ""
+    const products = await this.mongoDB.getAll(this.collection, query);
+    return products || [];
   }
   async getProductId({ productId }) {
-    try {
-      let product = await this.MySqlLib.get(productId);
-      product = JSON.parse(JSON.stringify(product));
-      return { status: 'success', product, message: 'Product Found' };
-    } catch (err) {
-      return { status: 'error', message: 'Product not Found' };
-    }
+    const product = await this.mongoDB.get(this.collection, productId);
+    return product || {};
   }
+
   async createProduct(productObj) {
-    try {
-      if (
-        !productObj ||
-        !productObj.title ||
-        !productObj.price ||
-        !productObj.thumbnail
-      ) {
-        throw new Error();
-      }
-      const productId = await this.MySqlLib.create(productObj);
-      let product = await this.MySqlLib.get(productId[0]);
-      product = JSON.parse(JSON.stringify(product));
-      return {
-        status: 'success',
-        product: product[0],
-        message: 'Product Saved',
-      };
-    } catch (err) {
-      return { status: 'error', message: 'Product not Saved' };
-    }
+    const { title, price, thumbnail } = productObj;
+
+    const createProductId = await this.mongoDB.create(this.collection, {
+      title,
+      price,
+      thumbnail,
+    });
+    return createProductId;
   }
-  async updateProduct(productId, productObj) {
-    try {
-      const products = await this.MySqlLib.update(productId, productObj);
-      return { status: 'success', products, message: 'Product Updated' };
-    } catch (err) {
-      return { status: 'error', message: 'Product not Updated' };
-    }
+
+  async updateProduct({ productId, productObj } = {}) {
+    const updateProductId = await this.mongoDB.update(
+      this.collection,
+      productId,
+      productObj
+    );
+    return updateProductId;
   }
 
   async deleteProductId({ productId }) {
