@@ -4,7 +4,7 @@ const argv = require('minimist')(process.argv.slice(2));
 
 const config = {
   dev: process.env.NODE_ENV !== 'production',
-  dbPort: argv.p || 80,
+  dbPort: argv.p || 3000,
   cors: process.env.CORS,
   dbUser: process.env.DB_USER,
   dbUserMongo: process.env.DB_USER_MONGO,
