@@ -116,7 +116,8 @@ class Server {
       this.configSockets();
       this.configRoutes();
       this.configTemplates();
-      this.server.listen(this.port, function () {
+      const host = '0.0.0.0';
+      this.server.listen(this.port, host, function () {
         debug(`Listening http://localhost:${config.dbPort}`);
         loggerInfo.info(`Listening http://localhost:${config.dbPort}`);
       });
