@@ -1,6 +1,7 @@
 // Dependencies
 const express = require('express');
 const http = require('http');
+const favicon = require('serve-favicon');
 const path = require('path');
 const exphbs = require('express-handlebars');
 const cluster = require('cluster');
@@ -64,6 +65,7 @@ class Server {
     this.app.use(corsHandler());
     this.app.use(sessionHandler);
     this.app.use(compression());
+    this.app.use(favicon(path.join(__dirname, '../public', 'favicon.ico')));
     this.app.use('/static', express.static('public'));
   }
   utilities() {
