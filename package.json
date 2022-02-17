@@ -52,7 +52,7 @@
     "serve-favicon": "2.5.0",
     "socket.io": "4.4.0",
     "sqlite3": "4.2.0",
-    "faker": "5.5.3",
+    "faker": "5.5.3"
   },
   "devDependencies": {
     "eslint": "8.2.0",
