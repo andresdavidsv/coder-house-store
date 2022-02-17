@@ -7,7 +7,7 @@
     "dev": "DEBUG=express:*,app:*  nodemon index",
     "debug": "DEBUG=express:*,app:* npm run start",
     "inspect": "DEBUG=express:*,app:* nodemon --inspect index",
-    "start": "0x index ",
+    "start": "node index ",
     "test": "node benchmark.js"
   },
   "repository": {
