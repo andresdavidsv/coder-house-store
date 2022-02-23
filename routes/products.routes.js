@@ -1,12 +1,25 @@
 const express = require('express');
+const passport = require('passport');
 const ProductsService = require('../services/products');
 
-// Configurations
-const { config } = require('../config');
+const {
+  productIdSchema,
+  createProductSchema,
+  updateProductSchema,
+} = require('../utils/schemas/products');
 
 // Middleware
+const validationHandler = require('../utils/middleware/validationHandlers');
 const scopesValidationHandler = require('../utils/middleware/scopesValidationHandler');
-const ADMIN = config.scopeRole;
+
+const cacheResponse = require('../utils/cacheResponse');
+const {
+  FIVE_MINUTES_IN_SECONDS,
+  SIXTY_MINUTES_IN_SECONDS,
+} = require('../utils/time');
+
+//JWT strategy
+require('../utils/auth/strategies/jwt');
 
 /**
  * @swagger
@@ -83,8 +96,10 @@ function productsApi(app) {
 
   router.get(
     '/',
-    scopesValidationHandler({ isAdmin: ADMIN }),
+    passport.authenticate('jwt', { session: false }),
+    scopesValidationHandler(['read:products']),
     async function (req, res, next) {
+      cacheResponse(res, FIVE_MINUTES_IN_SECONDS);
       const { name } = req.query;
       try {
         const products = await productsService.getProducts({ name });
@@ -125,8 +140,11 @@ function productsApi(app) {
 
   router.get(
     '/:productId',
-    scopesValidationHandler({ isAdmin: ADMIN }),
+    passport.authenticate('jwt', { session: false }),
+    scopesValidationHandler(['read:products']),
+    validationHandler({ productId: productIdSchema }, 'params'),
     async function (req, res, next) {
+      cacheResponse(res, SIXTY_MINUTES_IN_SECONDS);
       const { productId } = req.params;
       try {
         const product = await productsService.getProductId({ productId });
@@ -166,7 +184,9 @@ function productsApi(app) {
 
   router.post(
     '/',
-    scopesValidationHandler({ isAdmin: ADMIN }),
+    passport.authenticate('jwt', { session: false }),
+    scopesValidationHandler(['create:products']),
+    validationHandler(createProductSchema),
     async function (req, res, next) {
       const { body: product } = req;
       try {
@@ -216,7 +236,10 @@ function productsApi(app) {
 
   router.put(
     '/:productId',
-    scopesValidationHandler({ isAdmin: ADMIN }),
+    passport.authenticate('jwt', { session: false }),
+    scopesValidationHandler(['update:products']),
+    validationHandler({ productId: productIdSchema }, 'params'),
+    validationHandler(updateProductSchema),
     async function (req, res, next) {
       const { productId } = req.params;
       const { body: product } = req;
@@ -262,12 +285,16 @@ function productsApi(app) {
    */
   router.delete(
     '/:productId',
-    scopesValidationHandler({ isAdmin: ADMIN }),
+    passport.authenticate('jwt', { session: false }),
+    scopesValidationHandler(['delete:products']),
+    validationHandler({ productId: productIdSchema }, 'params'),
     async function (req, res, next) {
       const { productId } = req.params;
 
       try {
-        const deleteProductlId = await productsService.deleteProductId({ productId });
+        const deleteProductlId = await productsService.deleteProductId({
+          productId,
+        });
         res.status(200).json({
           data: deleteProductlId,
           message: 'material deleted',

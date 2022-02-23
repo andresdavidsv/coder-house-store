@@ -1,12 +1,44 @@
 const MongoLib = require('../lib/mongo');
+const { transporter } = require('../utils/emails/transporter');
+const { config } = require('../config');
+const debug = require('debug')('app:db');
+
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+
+const client = require('twilio')(accountSid, authToken);
 
 class CartsService {
   constructor() {
     this.collection = 'carts';
     this.mongoDB = new MongoLib();
   }
-  async getCartId({ cartId }) {
+  async getCartId({ cartId, user }) {
     const cart = await this.mongoDB.get(this.collection, cartId);
+    try {
+      await transporter.sendMail({
+        from: '"Coder App 👻" <andres@coder.com>',
+        to: `${config.gmailAdmin}`,
+        subject: `New Order from ${user.user_name} ${user.email}`,
+        text: 'Review Your Products',
+        html: `<h1>Hello user</h1>
+              <h2>Products List:</h2>
+              <span> ${cart} </span><br>
+      `,
+      });
+      await client.messages.create({
+        body: `Hello, new order was created by ${user.user_name} ${user.email}`,
+        from: process.env.WHATSAPP_NUMBER,
+        to: process.env.RECEVIED_NUMBER,
+      });
+      await client.messages.create({
+        body: `Hello, new order was created by ${user.user_name} ${user.email}`,
+        from: `whatsapp:+14155238886`,
+        to: `whatsapp:${process.env.RECEVIED_NUMBER}`,
+      });
+    } catch (error) {
+      debug(error);
+    }
     return cart || [];
   }
   async createCart() {

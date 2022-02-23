@@ -22,7 +22,7 @@ function wrapErrors(err, req, res, next) {
   next(err);
 }
 
-function errorHandler(err, req, res, next) {// eslint-disable-line
+function errorHandler(err, req, res) {
   const {
     output: { statusCode, payload },
   } = err;

@@ -25,6 +25,8 @@ const {
 const helpers = require('../utils/helpers/helpers');
 
 //Servers
+const authApi = require('../routes/auth.routes');
+const usersApi = require('../routes/users.routes');
 const productsApi = require('../routes/products.routes');
 const cartsApi = require('../routes/carts.routes');
 
@@ -48,10 +50,6 @@ class Server {
     this.app.use(corsHandler());
     this.app.use(helmet());
     this.app.use('/static', express.static('public'));
-    //Error middleware
-    this.app.use(logErrors);
-    this.app.use(wrapErrors);
-    this.app.use(errorHandler);
   }
   utilities() {
     this.app.use((req, res, next) => {
@@ -60,9 +58,19 @@ class Server {
     });
   }
   configRoutes() {
+    authApi(this.app);
+    usersApi(this.app);
     productsApi(this.app);
     cartsApi(this.app);
     this.app.use(notFoundHandler);
+    this.app.use(logErrors);
+    this.app.use(wrapErrors);
+    this.app.use(errorHandler);
+  }
+  errorMiddleware() {
+    this.app.use(logErrors);
+    this.app.use(wrapErrors);
+    this.app.use(errorHandler);
   }
   configDocumentation() {
     const options = {
@@ -96,6 +104,7 @@ class Server {
     this.configDocumentation();
     this.middleware();
     this.configRoutes();
+    this.errorMiddleware();
     this.server.listen(this.port, function () {
       const debug = require('debug')('app:server');
       debug(`Listening http://localhost:${config.dbPort}`);

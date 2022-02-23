@@ -1,13 +1,21 @@
 const express = require('express');
+const passport = require('passport');
+
+// Services
 const CartsService = require('../services/carts');
 const ProductsService = require('../services/products');
 
-// Configurations
-const { config } = require('../config');
-
 // Middleware
 const scopesValidationHandler = require('../utils/middleware/scopesValidationHandler');
-const ADMIN = config.scopeRole;
+
+const cacheResponse = require('../utils/cacheResponse');
+const {
+  FIVE_MINUTES_IN_SECONDS,
+  SIXTY_MINUTES_IN_SECONDS,
+} = require('../utils/time');
+
+//JWT strategy
+require('../utils/auth/strategies/jwt');
 
 /**
  * @swagger
@@ -63,18 +71,25 @@ function cartsApi(app) {
    *      403:
    *        description : The Cart not Found
    */
-  router.get('/:cartId/products', async function (req, res, next) {
-    const { cartId } = req.params;
-    try {
-      const cart = await cartsService.getCartId({ cartId });
-      res.status(200).json({
-        data: cart,
-        message: 'cart retrieved',
-      });
-    } catch (err) {
-      next(err);
+  router.get(
+    '/:cartId/products',
+    passport.authenticate('jwt', { session: false }),
+    scopesValidationHandler(['read:carts']),
+    async function (req, res, next) {
+      cacheResponse(res, FIVE_MINUTES_IN_SECONDS);
+      const { user } = req;
+      const { cartId } = req.params;
+      try {
+        const cart = await cartsService.getCartId({ cartId, user });
+        res.status(200).json({
+          data: cart,
+          message: 'cart retrieved',
+        });
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 
   /**
    * @swagger
@@ -99,25 +114,31 @@ function cartsApi(app) {
    *        description : The Product not was added
    */
 
-  router.post('/:cartId/products', async function (req, res, next) {
-    const { cartId } = req.params;
-    const { body: productId } = req;
-    let product;
-    try {
-      product = await productsService.getProductId(productId);
-    } catch (err) {
-      next(err);
+  router.post(
+    '/:cartId/products',
+    passport.authenticate('jwt', { session: false }),
+    scopesValidationHandler(['create:carts']),
+    async function (req, res, next) {
+      cacheResponse(res, SIXTY_MINUTES_IN_SECONDS);
+      const { cartId } = req.params;
+      const { body: productId } = req;
+      let product;
+      try {
+        product = await productsService.getProductId(productId);
+      } catch (err) {
+        next(err);
+      }
+      try {
+        const cart = await cartsService.createProductAtCart(cartId, product);
+        res.status(200).json({
+          data: cart,
+          message: 'cart updated',
+        });
+      } catch (err) {
+        next(err);
+      }
     }
-    try {
-      const cart = await cartsService.createProductAtCart(cartId, product);
-      res.status(200).json({
-        data: cart,
-        message: 'cart updated',
-      });
-    } catch (err) {
-      next(err);
-    }
-  });
+  );
   /**
    * @swagger
    * /carts:
@@ -139,17 +160,22 @@ function cartsApi(app) {
    *        description : The Cart not was created
    */
 
-  router.post('/', async function (req, res, next) {
-    try {
-      const createdCartId = await cartsService.createCart();
-      res.status(201).json({
-        data: createdCartId,
-        message: 'cart created',
-      });
-    } catch (err) {
-      next(err);
+  router.post(
+    '/',
+    passport.authenticate('jwt', { session: false }),
+    scopesValidationHandler(['update:carts']),
+    async function (req, res, next) {
+      try {
+        const createdCartId = await cartsService.createCart();
+        res.status(201).json({
+          data: createdCartId,
+          message: 'cart created',
+        });
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 
   /**
    * @swagger
@@ -174,18 +200,23 @@ function cartsApi(app) {
    *      403:
    *        description : The Cart not was removed
    */
-  router.delete('/:cartId', async function (req, res, next) {
-    const { cartId } = req.params;
-    try {
-      const deleteCartId = await cartsService.deleteCartId({ cartId });
-      res.status(200).json({
-        data: deleteCartId,
-        message: 'cart deleted',
-      });
-    } catch (err) {
-      next(err);
+  router.delete(
+    '/:cartId',
+    passport.authenticate('jwt', { session: false }),
+    scopesValidationHandler(['delete:carts']),
+    async function (req, res, next) {
+      const { cartId } = req.params;
+      try {
+        const deleteCartId = await cartsService.deleteCartId({ cartId });
+        res.status(200).json({
+          data: deleteCartId,
+          message: 'cart deleted',
+        });
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 
   /**
    * @swagger
@@ -218,7 +249,8 @@ function cartsApi(app) {
    */
   router.delete(
     '/:cartId/products/:productId',
-    scopesValidationHandler({ isAdmin: ADMIN }),
+    passport.authenticate('jwt', { session: false }),
+    scopesValidationHandler(['delete:carts']),
     async function (req, res, next) {
       const { cartId, productId } = req.params;
       try {
