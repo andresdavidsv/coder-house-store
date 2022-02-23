@@ -23,19 +23,19 @@ class CartsService {
         text: 'Review Your Products',
         html: `<h1>Hello user</h1>
               <h2>Products List:</h2>
-              <span> ${cart} </span><br>
+              <span> ${JSON.stringify(cart.products)} </span><br>
       `,
       });
-      await client.messages.create({
-        body: `Hello, new order was created by ${user.user_name} ${user.email}`,
-        from: process.env.WHATSAPP_NUMBER,
-        to: process.env.RECEVIED_NUMBER,
-      });
-      await client.messages.create({
-        body: `Hello, new order was created by ${user.user_name} ${user.email}`,
-        from: `whatsapp:+14155238886`,
-        to: `whatsapp:${process.env.RECEVIED_NUMBER}`,
-      });
+      // await client.messages.create({
+      //   body: `Hello, new order was created by ${user.user_name} ${user.email}`,
+      //   from: process.env.WHATSAPP_NUMBER,
+      //   to: process.env.RECEVIED_NUMBER,
+      // });
+      // await client.messages.create({
+      //   body: `Hello, new order was created by ${user.user_name} ${user.email}`,
+      //   from: `whatsapp:+14155238886`,
+      //   to: `whatsapp:${process.env.RECEVIED_NUMBER}`,
+      // });
     } catch (error) {
       debug(error);
     }
