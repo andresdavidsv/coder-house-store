@@ -8,7 +8,7 @@ const userPhoneSchema = joi
   .string()
   .length(10)
   .pattern(/^[0-9]+$/);
-const userUserNameSchema = joi.string().min(3).max(10);
+const userUserNameSchema = joi.string().min(3);
 const userEmailSchema = joi.string().email();
 const userPasswordSchema = joi.string().regex(/^[a-zA-Z0-9]{3,30}$/);
 const userAdminSchema = joi.boolean().default(false);

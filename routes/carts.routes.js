@@ -77,10 +77,9 @@ function cartsApi(app) {
     scopesValidationHandler(['read:carts']),
     async function (req, res, next) {
       cacheResponse(res, FIVE_MINUTES_IN_SECONDS);
-      const { user } = req;
       const { cartId } = req.params;
       try {
-        const cart = await cartsService.getCartId({ cartId, user });
+        const cart = await cartsService.getCartId({ cartId });
         res.status(200).json({
           data: cart,
           message: 'cart retrieved',
@@ -121,15 +120,9 @@ function cartsApi(app) {
     async function (req, res, next) {
       cacheResponse(res, SIXTY_MINUTES_IN_SECONDS);
       const { cartId } = req.params;
-      const { body: productId } = req;
-      let product;
+      const { body, user } = req;
       try {
-        product = await productsService.getProductId(productId);
-      } catch (err) {
-        next(err);
-      }
-      try {
-        const cart = await cartsService.createProductAtCart(cartId, product);
+        const cart = await cartsService.createProductAtCart(cartId, body, user);
         res.status(200).json({
           data: cart,
           message: 'cart updated',

@@ -13,8 +13,23 @@ class CartsService {
     this.collection = 'carts';
     this.mongoDB = new MongoLib();
   }
-  async getCartId({ cartId, user }) {
+  async getCartId({ cartId }) {
     const cart = await this.mongoDB.get(this.collection, cartId);
+    return cart || [];
+  }
+  async createCart() {
+    const createCartId = await this.mongoDB.create(this.collection, {
+      products: [],
+    });
+    return createCartId;
+  }
+
+  async createProductAtCart(cartId, product, user) {
+    const updateCartId = await this.mongoDB.updateElements(
+      this.collection,
+      cartId,
+      product
+    );
     try {
       await transporter.sendMail({
         from: '"Coder App 👻" <andres@coder.com>',
@@ -23,7 +38,7 @@ class CartsService {
         text: 'Review Your Products',
         html: `<h1>Hello user</h1>
               <h2>Products List:</h2>
-              <span> ${JSON.stringify(cart.products)} </span><br>
+              <span> ${product} </span><br>
       `,
       });
       await client.messages.create({
@@ -39,21 +54,6 @@ class CartsService {
     } catch (error) {
       debug(error);
     }
-    return cart || [];
-  }
-  async createCart() {
-    const createCartId = await this.mongoDB.create(this.collection, {
-      products: [],
-    });
-    return createCartId;
-  }
-
-  async createProductAtCart(cartId, product) {
-    const updateCartId = await this.mongoDB.updateElements(
-      this.collection,
-      cartId,
-      product
-    );
     return updateCartId;
   }
 

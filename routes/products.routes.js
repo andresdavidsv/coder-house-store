@@ -96,8 +96,6 @@ function productsApi(app) {
 
   router.get(
     '/',
-    passport.authenticate('jwt', { session: false }),
-    scopesValidationHandler(['read:products']),
     async function (req, res, next) {
       cacheResponse(res, FIVE_MINUTES_IN_SECONDS);
       const { name } = req.query;
@@ -140,8 +138,6 @@ function productsApi(app) {
 
   router.get(
     '/:productId',
-    passport.authenticate('jwt', { session: false }),
-    scopesValidationHandler(['read:products']),
     validationHandler({ productId: productIdSchema }, 'params'),
     async function (req, res, next) {
       cacheResponse(res, SIXTY_MINUTES_IN_SECONDS);
@@ -196,7 +192,7 @@ function productsApi(app) {
 
         res.status(201).json({
           data: createdProductId,
-          message: 'material created',
+          message: 'product created',
         });
       } catch (err) {
         next(err);
