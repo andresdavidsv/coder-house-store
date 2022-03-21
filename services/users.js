@@ -1,29 +1,29 @@
-const MongoLib = require('../lib/mongo');
+const Lib = require('../lib');
 const bcrypt = require('bcrypt');
 
 class UsersService {
   constructor() {
     this.collection = 'users';
-    this.mongoDB = new MongoLib();
+    this.persistenceDb = new Lib();
   }
 
   async getUsers({ tags }) {
     const query = tags && { tags: { $in: tags } };
-    const users = await this.mongoDB.getAll(this.collection, query);
+    const users = await this.persistenceDb.getAll(this.collection, query);
     return users || [];
   }
 
   async getUserId({ userId }) {
-    const user = await this.mongoDB.get(this.collection, userId);
+    const user = await this.persistenceDb.get(this.collection, userId);
     return user || {};
   }
 
   async getUserName({ user_name }) {
-    const [user] = await this.mongoDB.getAll(this.collection, { user_name });
+    const [user] = await this.persistenceDb.getAll(this.collection, { user_name });
     return user;
   }
   async getUser({ email }) {
-    const [user] = await this.mongoDB.getAll(this.collection, { email });
+    const [user] = await this.persistenceDb.getAll(this.collection, { email });
     return user;
   }
 
@@ -31,7 +31,7 @@ class UsersService {
     const { email, password, user_name} = user;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const createUserId = await this.mongoDB.create(this.collection, {
+    const createUserId = await this.persistenceDb.create(this.collection, {
       email,
       user_name,
       password: hashedPassword,
@@ -40,7 +40,7 @@ class UsersService {
   }
 
   async updateUser({ userId, user } = {}) {
-    const updateUserId = await this.mongoDB.update(
+    const updateUserId = await this.persistenceDb.update(
       this.collection,
       userId,
       user
@@ -49,7 +49,7 @@ class UsersService {
   }
 
   async deleteUser({ userId }) {
-    const deleteUserId = await this.mongoDB.delete(this.collection, userId);
+    const deleteUserId = await this.persistenceDb.delete(this.collection, userId);
     return deleteUserId;
   }
 

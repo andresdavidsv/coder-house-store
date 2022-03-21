@@ -1,4 +1,4 @@
-const MongoLib = require('../lib/mongo');
+const Lib = require('../lib');
 const { normalize, schema } = require('normalizr');
 
 const schemaAutor = new schema.Entity('author', {}, { idAttribute: 'email' });
@@ -18,11 +18,11 @@ const schemaMessages = new schema.Entity(
 class ChatMessagesService {
   constructor() {
     this.collection = 'chatMessages';
-    this.mongoDB = new MongoLib();
+    this.persistenceDb = new Lib();
   }
   async getChatMessages({ name }) {
     const query = name && { name: { $in: name } };
-    let chatMessages = await this.mongoDB.getAll(this.collection, query);
+    let chatMessages = await this.persistenceDb.getAll(this.collection, query);
 
     chatMessages = {
       id: 'mensaje',
@@ -46,12 +46,12 @@ class ChatMessagesService {
 
   async getChatMessagesNormal({ name }) {
     const query = name && { name: { $in: name } };
-    const chatMessages = await this.mongoDB.getAll(this.collection, query);
+    const chatMessages = await this.persistenceDb.getAll(this.collection, query);
     return chatMessages || [];
   }
 
   async createChatMessages(chatMessage) {
-    await this.mongoDB.create(this.collection, chatMessage);
+    await this.persistenceDb.create(this.collection, chatMessage);
     let messages = await this.getChatMessagesNormal('');
     messages = {
       id: 'message',
