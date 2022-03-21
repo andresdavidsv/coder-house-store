@@ -1,4 +1,4 @@
-const Lib = require('../lib');
+const DaoFactory = require('../lib');
 const { normalize, schema } = require('normalizr');
 
 const schemaAutor = new schema.Entity('author', {}, { idAttribute: 'email' });
@@ -15,10 +15,11 @@ const schemaMessages = new schema.Entity(
   { idAttribute: 'id' }
 );
 
+const some = DaoFactory.getDao();
 class ChatMessagesService {
   constructor() {
     this.collection = 'chatMessages';
-    this.persistenceDb = new Lib();
+    this.persistenceDb = new some();
   }
   async getChatMessages({ name }) {
     const query = name && { name: { $in: name } };

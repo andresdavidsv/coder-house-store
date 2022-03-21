@@ -1,9 +1,10 @@
-const Lib = require('../lib');
+const DaoFactory = require('../lib');
+const some = DaoFactory.getDao();
 
 class ApiKeysService {
   constructor() {
     this.collection = 'api-keys';
-    this.persistenceDb = new Lib();
+    this.persistenceDb = new some();
   }
   async getApiKey({ token }) {
     const [apikey] = await this.persistenceDb.getAll(this.collection, {

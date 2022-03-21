@@ -1,9 +1,10 @@
-const Lib = require('../lib');
+const DaoFactory = require('../lib');
 
+const some = DaoFactory.getDao();
 class ProductsService {
   constructor() {
     this.collection = 'products';
-    this.persistenceDb = new Lib();
+    this.persistenceDb = new some()
   }
   async getProducts() {
     const query = '';
