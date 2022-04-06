@@ -73,7 +73,7 @@ class ProductsServiceMock {
   }
 }
 
-module.export = {
+module.exports = {
   productsMock,
   ProductsServiceMock,
   filteredProductsMock,
